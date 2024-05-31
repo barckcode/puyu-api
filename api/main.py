@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.aws.ami import aws_ami
+from routes.core.cloud import cloud
 
 
 puyu_frontend = os.getenv('PUYU_FRONTEND')
@@ -12,8 +12,8 @@ app = FastAPI(
     version="0.0.1",
     openapi_tags=[
         {
-            "name": "AWS",
-            "description": "AWS Services"
+            "name": "Core",
+            "description": "Core Stack"
         }
     ]
 )
@@ -30,4 +30,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(aws_ami)
+app.include_router(cloud)
