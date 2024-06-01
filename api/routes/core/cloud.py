@@ -47,7 +47,7 @@ def get_cloud_by_id(id: int, db: Session = Depends(get_db)):
 )
 def create_cloud(cloud: CloudCreateSchema, db: Session = Depends(get_db)):
     if not cloud.name:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Empty or Incorrect Cloud Data")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Incorrect Cloud Data or Cloud Name already exists")
     new_cloud = CloudModel(
         name=cloud.name,
     )

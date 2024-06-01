@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.core.cloud import cloud
+from routes.core.service import service
 
 
 puyu_frontend = os.getenv('PUYU_FRONTEND')
@@ -31,3 +32,4 @@ app.add_middleware(
 )
 
 app.include_router(cloud)
+app.include_router(service)
