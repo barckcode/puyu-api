@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
+from auth.jwt import verify_token
 from models.core.cloud import CloudModel
 from schemas.core.cloud import CloudSchema, CloudCreateSchema, CloudUpdateSchema
 
@@ -18,7 +19,8 @@ cloud = APIRouter()
     description="Get All Clouds",
     response_model=List[CloudSchema]
 )
-def get_all_clouds(db: Session = Depends(get_db)):
+async def get_all_clouds(db: Session = Depends(get_db), user: dict = Depends(verify_token)):
+    print("user:", user)
     cloud_query = db.query(CloudModel).all()
     cloud_list = [cloud.to_dict() for cloud in cloud_query]
     return JSONResponse(cloud_list)
