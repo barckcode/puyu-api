@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.core.cloud import cloud
 from routes.core.service import service
 from routes.core.project import project
+from routes.auth.project_user import project_user
 
 
 puyu_frontend = os.getenv('PUYU_FRONTEND_URL')
@@ -16,6 +17,10 @@ app = FastAPI(
         {
             "name": "Core",
             "description": "Core Stack"
+        },
+        {
+            "name": "Auth",
+            "description": "Authorization and authentication endpoints"
         }
     ]
 )
@@ -35,3 +40,4 @@ app.add_middleware(
 app.include_router(cloud)
 app.include_router(service)
 app.include_router(project)
+app.include_router(project_user)

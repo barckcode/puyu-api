@@ -8,6 +8,8 @@ class ProjectModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
+    project_user = relationship('ProjectUserModel', back_populates='project')
+
     def to_dict(self):
         return {
             "id": self.id,
