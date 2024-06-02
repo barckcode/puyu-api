@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
+from auth.jwt import verify_token
 from models.core.project import ProjectModel
+from models.auth.project_user import ProjectUserModel
 from schemas.core.project import ProjectSchema, ProjectCreateSchema, ProjectUpdateSchema
 
 
@@ -45,7 +47,7 @@ def get_project_by_id(id: int, db: Session = Depends(get_db)):
     description="Create One Project",
     response_model=ProjectSchema
 )
-def create_project(project: ProjectCreateSchema, db: Session = Depends(get_db)):
+def create_project(project: ProjectCreateSchema, db: Session = Depends(get_db), user: dict = Depends(verify_token)):
     if not project.name:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Incorrect Project Data or Project Name already exists")
     new_project = ProjectModel(
@@ -55,7 +57,13 @@ def create_project(project: ProjectCreateSchema, db: Session = Depends(get_db)):
         db.add(new_project)
         db.commit()
         db.refresh(new_project)
-        return new_project
+        project_user = ProjectUserModel(
+            sub=user.get('sub'),
+            project_id=new_project.id
+        )
+        db.add(project_user)
+        db.commit()
+        return JSONResponse(content=new_project.to_dict(), status_code=status.HTTP_201_CREATED)
     except IntegrityError:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Project ID does not exist in project table")
 
