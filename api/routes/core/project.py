@@ -31,7 +31,8 @@ def get_all_projects(db: Session = Depends(get_db)):
     tags=["Core"],
     summary="Get Project",
     description="Get Project by ID",
-    response_model=ProjectSchema
+    response_model=ProjectSchema,
+    dependencies=[Depends(verify_token)]
 )
 def get_project_by_id(id: int, db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == id).first()
