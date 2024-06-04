@@ -9,6 +9,7 @@ class CloudModel(Base):
     name = Column(String, unique=True, nullable=False)
 
     service = relationship('ServiceModel', back_populates='cloud')
+    region = relationship('RegionModel', back_populates='cloud')
 
     def to_dict(self):
         return {

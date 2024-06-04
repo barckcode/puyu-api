@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from db.config import Base, engine
 
@@ -8,7 +8,9 @@ class RegionModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     region_aws_id = Column(String, unique=True, nullable=False)
+    cloud_id = Column(Integer, ForeignKey('cloud.id'), nullable=False)
 
+    cloud = relationship('CloudModel', back_populates='region')
     ami = relationship('AmiModel', back_populates='region')
 
     def to_dict(self):
