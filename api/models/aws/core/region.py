@@ -18,6 +18,8 @@ class RegionModel(Base):
             "id": self.id,
             "name": self.name,
             "region_aws_id": self.region_aws_id,
+            "cloud_id": self.cloud_id,
+            "cloud": self.cloud.to_dict() if self.cloud else None
         }
 
 Base.metadata.create_all(engine)

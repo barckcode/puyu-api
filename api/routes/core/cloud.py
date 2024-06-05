@@ -6,7 +6,9 @@ from typing import List
 from db.session import get_db
 from auth.jwt import verify_token
 from models.core.cloud import CloudModel
+from models.aws.core.region import RegionModel
 from schemas.core.cloud import CloudSchema, CloudCreateSchema, CloudUpdateSchema
+from schemas.aws.core.region import RegionSchema
 
 
 cloud = APIRouter()
@@ -18,7 +20,7 @@ cloud = APIRouter()
     summary="Get Clouds",
     description="Get All Clouds",
     response_model=List[CloudSchema],
-    dependencies=[Depends(verify_token)]
+    #dependencies=[Depends(verify_token)]
 )
 async def get_all_clouds(db: Session = Depends(get_db)):
     cloud_query = db.query(CloudModel).all()
@@ -38,6 +40,21 @@ def get_cloud_by_id(id: int, db: Session = Depends(get_db)):
     if cloud is None:
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud not found")
     return cloud
+
+
+@cloud.get(
+    "/cloud/{id}/regions",
+    tags=["Core"],
+    summary="Get Regions by Cloud ID",
+    description="Get Regions by Cloud ID",
+    response_model=List[RegionSchema]
+)
+def get_region_by_cloud_id(id: int, db: Session = Depends(get_db)):
+    region_query = db.query(RegionModel).filter(RegionModel.cloud_id == id).all()
+    if region_query is None:
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud ID dont have regions")
+    region_list = [region.to_dict() for region in region_query]
+    return JSONResponse(region_list)
 
 
 @cloud.post(

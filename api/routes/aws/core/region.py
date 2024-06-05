@@ -7,7 +7,9 @@ from db.session import get_db
 from auth.jwt import verify_token
 from models.aws.core.region import RegionModel
 from models.core.cloud import CloudModel
+from models.aws.core.ami import AmiModel
 from schemas.aws.core.region import RegionSchema, RegionCreateSchema, RegionUpdateSchema
+from schemas.aws.core.ami import AmiSchema
 
 
 aws_region = APIRouter()
@@ -39,6 +41,20 @@ def get_region_by_id(id: int, db: Session = Depends(get_db)):
     if region is None:
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Region not found")
     return region
+
+
+@aws_region.get(
+    "/aws/region/{id}/amis",
+    tags=["AWS Core"],
+    summary="Get AMIs by Region ID",
+    description="Get AMIs by Region ID",
+    response_model=List[AmiSchema],
+    #dependencies=[Depends(verify_token)]
+)
+async def get_all_amis_by_region_id(id: int, db: Session = Depends(get_db)):
+    ami_query = db.query(AmiModel).filter(AmiModel.region_id == id).all()
+    ami_list = [ami.to_dict() for ami in ami_query]
+    return JSONResponse(ami_list)
 
 
 @aws_region.post(

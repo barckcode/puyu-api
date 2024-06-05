@@ -11,7 +11,7 @@ class AmiModel(Base):
     ami_aws_id = Column(String, unique=True, nullable=False)
     region_id = Column(Integer, ForeignKey('aws_region.id'), nullable=False)
 
-    region = relationship('RegionModel', back_populates='aws_ami')
+    region = relationship('RegionModel', back_populates='ami')
 
     def to_dict(self):
         return {
@@ -21,6 +21,7 @@ class AmiModel(Base):
             "region": self.region,
             "ami_aws_id": self.ami_aws_id,
             "region_id": self.region_id,
+            "region": self.region.to_dict() if self.region else None
         }
 
 Base.metadata.create_all(engine)
