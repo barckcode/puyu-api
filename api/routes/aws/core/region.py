@@ -49,7 +49,7 @@ def get_region_by_id(id: int, db: Session = Depends(get_db)):
     summary="Get AMIs by Region ID",
     description="Get AMIs by Region ID",
     response_model=List[AmiSchema],
-    #dependencies=[Depends(verify_token)]
+    dependencies=[Depends(verify_token)]
 )
 async def get_all_amis_by_region_id(id: int, db: Session = Depends(get_db)):
     ami_query = db.query(AmiModel).filter(AmiModel.region_id == id).all()

@@ -20,7 +20,7 @@ cloud = APIRouter()
     summary="Get Clouds",
     description="Get All Clouds",
     response_model=List[CloudSchema],
-    #dependencies=[Depends(verify_token)]
+    dependencies=[Depends(verify_token)]
 )
 async def get_all_clouds(db: Session = Depends(get_db)):
     cloud_query = db.query(CloudModel).all()
@@ -47,7 +47,8 @@ def get_cloud_by_id(id: int, db: Session = Depends(get_db)):
     tags=["Core"],
     summary="Get Regions by Cloud ID",
     description="Get Regions by Cloud ID",
-    response_model=List[RegionSchema]
+    response_model=List[RegionSchema],
+    dependencies=[Depends(verify_token)]
 )
 def get_region_by_cloud_id(id: int, db: Session = Depends(get_db)):
     region_query = db.query(RegionModel).filter(RegionModel.cloud_id == id).all()
