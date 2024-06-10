@@ -7,6 +7,7 @@ from routes.core.project import project
 from routes.auth.project_user import project_user
 from routes.aws.core.region import aws_region
 from routes.aws.core.ami import aws_ami
+from routes.aws.core.instance_type import aws_instance_type
 
 
 puyu_frontend = os.getenv('PUYU_FRONTEND_URL')
@@ -45,3 +46,4 @@ app.include_router(project)
 app.include_router(project_user)
 app.include_router(aws_region)
 app.include_router(aws_ami)
+app.include_router(aws_instance_type)

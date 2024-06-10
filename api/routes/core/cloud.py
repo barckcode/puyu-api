@@ -7,8 +7,10 @@ from db.session import get_db
 from auth.jwt import verify_token
 from models.core.cloud import CloudModel
 from models.aws.core.region import RegionModel
+from models.aws.core.instance_type import InstanceTypeModel
 from schemas.core.cloud import CloudSchema, CloudCreateSchema, CloudUpdateSchema
 from schemas.aws.core.region import RegionSchema
+from schemas.aws.core.instance_type import InstanceTypeSchema
 
 
 cloud = APIRouter()
@@ -56,6 +58,22 @@ def get_region_by_cloud_id(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud ID dont have regions")
     region_list = [region.to_dict() for region in region_query]
     return JSONResponse(region_list)
+
+
+@cloud.get(
+    "/cloud/{id}/instance_types",
+    tags=["Core"],
+    summary="Get Instance Types by Cloud ID",
+    description="Get Instance Types by Cloud ID",
+    response_model=List[InstanceTypeSchema],
+    dependencies=[Depends(verify_token)]
+)
+def get_instance_type_by_cloud_id(id: int, db: Session = Depends(get_db)):
+    instance_type_query = db.query(InstanceTypeModel).filter(InstanceTypeModel.cloud_id == id).all()
+    if instance_type_query is None:
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud ID dont have instance types")
+    instance_type_list = [instance_type.to_dict() for instance_type in instance_type_query]
+    return JSONResponse(instance_type_list)
 
 
 @cloud.post(
