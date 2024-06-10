@@ -6,11 +6,13 @@ from typing import List
 from db.session import get_db
 from auth.jwt import verify_token
 from models.core.cloud import CloudModel
-from models.aws.core.region import RegionModel
-from models.aws.core.instance_type import InstanceTypeModel
+from models.core.region import RegionModel
+from models.core.instance_type import InstanceTypeModel
+from models.core.storage import StorageModel
 from schemas.core.cloud import CloudSchema, CloudCreateSchema, CloudUpdateSchema
-from schemas.aws.core.region import RegionSchema
-from schemas.aws.core.instance_type import InstanceTypeSchema
+from schemas.core.region import RegionSchema
+from schemas.core.instance_type import InstanceTypeSchema
+from schemas.core.storage import StorageSchema
 
 
 cloud = APIRouter()
@@ -61,7 +63,7 @@ def get_region_by_cloud_id(id: int, db: Session = Depends(get_db)):
 
 
 @cloud.get(
-    "/cloud/{id}/instance_types",
+    "/cloud/{id}/instance-types",
     tags=["Core"],
     summary="Get Instance Types by Cloud ID",
     description="Get Instance Types by Cloud ID",
@@ -74,6 +76,22 @@ def get_instance_type_by_cloud_id(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud ID dont have instance types")
     instance_type_list = [instance_type.to_dict() for instance_type in instance_type_query]
     return JSONResponse(instance_type_list)
+
+
+@cloud.get(
+    "/cloud/{id}/storage",
+    tags=["Core"],
+    summary="Get Storage by Cloud ID",
+    description="Get Storage by Cloud ID",
+    response_model=List[StorageSchema],
+    dependencies=[Depends(verify_token)]
+)
+def get_storage_by_cloud_id(id: int, db: Session = Depends(get_db)):
+    storage_query = db.query(StorageModel).filter(StorageModel.cloud_id == id).all()
+    if storage_query is None:
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud ID dont have storage")
+    storage_list = [storage.to_dict() for storage in storage_query]
+    return JSONResponse(storage_list)
 
 
 @cloud.post(

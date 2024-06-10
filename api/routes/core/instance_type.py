@@ -5,17 +5,17 @@ from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
 from auth.jwt import verify_token
-from models.aws.core.instance_type import InstanceTypeModel
+from models.core.instance_type import InstanceTypeModel
 from models.core.cloud import CloudModel
-from schemas.aws.core.instance_type import InstanceTypeSchema, InstanceTypeCreateSchema, InstanceTypeUpdateSchema
+from schemas.core.instance_type import InstanceTypeSchema, InstanceTypeCreateSchema, InstanceTypeUpdateSchema
 
 
-aws_instance_type = APIRouter()
+instance_type = APIRouter()
 
 
-@aws_instance_type.get(
-    "/aws/instance_type",
-    tags=["AWS Core"],
+@instance_type.get(
+    "/instance-type",
+    tags=["Core"],
     summary="Get Instance Types",
     description="Get All Instance Types",
     response_model=List[InstanceTypeSchema],
@@ -27,9 +27,9 @@ async def get_all_instance_types(db: Session = Depends(get_db)):
     return JSONResponse(instance_type_list)
 
 
-@aws_instance_type.get(
-    "/aws/instance_type/{id}",
-    tags=["AWS Core"],
+@instance_type.get(
+    "/instance-type/{id}",
+    tags=["Core"],
     summary="Get Instance Type",
     description="Get Instance Type by ID",
     response_model=InstanceTypeSchema
@@ -41,9 +41,9 @@ def get_instance_type_by_id(id: int, db: Session = Depends(get_db)):
     return instance_type
 
 
-@aws_instance_type.post(
-    "/aws/instance_type",
-    tags=["AWS Core"],
+@instance_type.post(
+    "/instance-type",
+    tags=["Core"],
     summary="Create Instance Type",
     description="Create One Instance Type",
     response_model=InstanceTypeSchema
@@ -69,9 +69,9 @@ def create_instance_type(instance_type: InstanceTypeCreateSchema, db: Session = 
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Instance Type ID does not exist in instance type table")
 
 
-@aws_instance_type.put(
-    "/aws/instance_type/{id}",
-    tags=["AWS Core"],
+@instance_type.put(
+    "/instance-type/{id}",
+    tags=["Core"],
     summary="Update Instance Type",
     description="Update Instance Type by id",
     response_model=InstanceTypeSchema
@@ -87,9 +87,9 @@ def update_instance_type_by_id(id: int, instance_type_update: InstanceTypeUpdate
     return InstanceTypeSchema.model_validate(instance_type.__dict__)
 
 
-@aws_instance_type.delete(
-    "/aws/instance_type/{id}",
-    tags=["AWS Core"],
+@instance_type.delete(
+    "/instance-type/{id}",
+    tags=["Core"],
     summary="Delete Instance Type",
     description="Delete Instance Type by ID",
     status_code=status.HTTP_204_NO_CONTENT

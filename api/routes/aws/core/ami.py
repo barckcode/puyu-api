@@ -6,7 +6,7 @@ from typing import List
 from db.session import get_db
 from auth.jwt import verify_token
 from models.aws.core.ami import AmiModel
-from models.aws.core.region import RegionModel
+from models.core.region import RegionModel
 from schemas.aws.core.ami import AmiSchema, AmiCreateSchema, AmiUpdateSchema
 
 

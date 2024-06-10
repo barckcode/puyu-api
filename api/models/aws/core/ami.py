@@ -9,7 +9,7 @@ class AmiModel(Base):
     distribution = Column(String, nullable=False)
     version = Column(String, nullable=False)
     ami_aws_id = Column(String, unique=True, nullable=False)
-    region_id = Column(Integer, ForeignKey('aws_region.id'), nullable=False)
+    region_id = Column(Integer, ForeignKey('region.id'), nullable=False)
 
     region = relationship('RegionModel', back_populates='ami')
 

@@ -5,19 +5,19 @@ from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
 from auth.jwt import verify_token
-from models.aws.core.region import RegionModel
+from models.core.region import RegionModel
 from models.core.cloud import CloudModel
 from models.aws.core.ami import AmiModel
-from schemas.aws.core.region import RegionSchema, RegionCreateSchema, RegionUpdateSchema
+from schemas.core.region import RegionSchema, RegionCreateSchema, RegionUpdateSchema
 from schemas.aws.core.ami import AmiSchema
 
 
-aws_region = APIRouter()
+region = APIRouter()
 
 
-@aws_region.get(
-    "/aws/region",
-    tags=["AWS Core"],
+@region.get(
+    "/region",
+    tags=["Core"],
     summary="Get Regions",
     description="Get All Regions",
     response_model=List[RegionSchema],
@@ -29,9 +29,9 @@ async def get_all_regions(db: Session = Depends(get_db)):
     return JSONResponse(region_list)
 
 
-@aws_region.get(
-    "/aws/region/{id}",
-    tags=["AWS Core"],
+@region.get(
+    "/region/{id}",
+    tags=["Core"],
     summary="Get Region",
     description="Get Region by ID",
     response_model=RegionSchema
@@ -43,9 +43,9 @@ def get_region_by_id(id: int, db: Session = Depends(get_db)):
     return region
 
 
-@aws_region.get(
-    "/aws/region/{id}/amis",
-    tags=["AWS Core"],
+@region.get(
+    "/region/{id}/amis",
+    tags=["Core"],
     summary="Get AMIs by Region ID",
     description="Get AMIs by Region ID",
     response_model=List[AmiSchema],
@@ -57,9 +57,9 @@ async def get_all_amis_by_region_id(id: int, db: Session = Depends(get_db)):
     return JSONResponse(ami_list)
 
 
-@aws_region.post(
-    "/aws/region",
-    tags=["AWS Core"],
+@region.post(
+    "/region",
+    tags=["Core"],
     summary="Create Region",
     description="Create One Region",
     response_model=RegionSchema
@@ -84,9 +84,9 @@ def create_region(region: RegionCreateSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Region ID does not exist in region table")
 
 
-@aws_region.put(
-    "/aws/region/{id}",
-    tags=["AWS Core"],
+@region.put(
+    "/region/{id}",
+    tags=["Core"],
     summary="Update Region",
     description="Update Region by id",
     response_model=RegionSchema
@@ -102,9 +102,9 @@ def update_region_by_id(id: int, region_update: RegionUpdateSchema, db: Session 
     return RegionSchema.model_validate(region.__dict__)
 
 
-@aws_region.delete(
-    "/aws/region/{id}",
-    tags=["AWS Core"],
+@region.delete(
+    "/region/{id}",
+    tags=["Core"],
     summary="Delete Region",
     description="Delete Region by ID",
     status_code=status.HTTP_204_NO_CONTENT

@@ -11,6 +11,7 @@ class CloudModel(Base):
     service = relationship('ServiceModel', back_populates='cloud')
     region = relationship('RegionModel', back_populates='cloud')
     instance_type = relationship('InstanceTypeModel', back_populates='cloud')
+    storage = relationship('StorageModel', back_populates='cloud')
 
     def to_dict(self):
         return {

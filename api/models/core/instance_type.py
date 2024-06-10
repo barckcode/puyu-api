@@ -3,21 +3,22 @@ from sqlalchemy.orm import relationship
 from db.config import Base, engine
 
 
-class RegionModel(Base):
-    __tablename__ = 'aws_region'
+class InstanceTypeModel(Base):
+    __tablename__ = 'instance_type'
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
-    region_aws_id = Column(String, unique=True, nullable=False)
+    cpu = Column(String, nullable=False)
+    memory = Column(String, nullable=False)
+    instance_type_aws_id = Column(String, unique=True, nullable=False)
     cloud_id = Column(Integer, ForeignKey('cloud.id'), nullable=False)
 
-    cloud = relationship('CloudModel', back_populates='region')
-    ami = relationship('AmiModel', back_populates='region')
+    cloud = relationship('CloudModel', back_populates='instance_type')
 
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
-            "region_aws_id": self.region_aws_id,
+            "cpu": self.cpu,
+            "memory": self.memory,
+            "instance_type_aws_id": self.instance_type_aws_id,
             "cloud_id": self.cloud_id,
             "cloud": self.cloud.to_dict() if self.cloud else None
         }
