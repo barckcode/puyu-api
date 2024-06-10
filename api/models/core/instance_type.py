@@ -8,7 +8,7 @@ class InstanceTypeModel(Base):
     id = Column(Integer, primary_key=True)
     cpu = Column(String, nullable=False)
     memory = Column(String, nullable=False)
-    instance_type_aws_id = Column(String, unique=True, nullable=False)
+    instance_type_cloud_id = Column(String, unique=True, nullable=False)
     cloud_id = Column(Integer, ForeignKey('cloud.id'), nullable=False)
 
     cloud = relationship('CloudModel', back_populates='instance_type')
@@ -18,7 +18,7 @@ class InstanceTypeModel(Base):
             "id": self.id,
             "cpu": self.cpu,
             "memory": self.memory,
-            "instance_type_aws_id": self.instance_type_aws_id,
+            "instance_type_cloud_id": self.instance_type_cloud_id,
             "cloud_id": self.cloud_id,
             "cloud": self.cloud.to_dict() if self.cloud else None
         }

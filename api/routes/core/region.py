@@ -68,11 +68,11 @@ def create_region(region: RegionCreateSchema, db: Session = Depends(get_db)):
     cloud = db.query(CloudModel).filter(CloudModel.id == region.cloud_id).first()
     if not cloud:
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud not found")
-    if not region.name or not region.region_aws_id:
+    if not region.name or not region.region_cloud_id:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Incorrect Region Data or Region Name already exists")
     new_region = RegionModel(
         name=region.name,
-        region_aws_id=region.region_aws_id,
+        region_cloud_id=region.region_cloud_id,
         cloud_id=region.cloud_id
     )
     try:

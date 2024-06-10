@@ -52,12 +52,12 @@ def create_instance_type(instance_type: InstanceTypeCreateSchema, db: Session = 
     cloud = db.query(CloudModel).filter(CloudModel.id == instance_type.cloud_id).first()
     if not cloud:
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Cloud not found")
-    if not instance_type.cpu or not instance_type.memory or not instance_type.instance_type_aws_id:
+    if not instance_type.cpu or not instance_type.memory or not instance_type.instance_type_cloud_id:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Incorrect Instance Type Data or Instance Type Name already exists")
     new_instance_type = InstanceTypeModel(
         cpu=instance_type.cpu,
         memory=instance_type.memory,
-        instance_type_aws_id=instance_type.instance_type_aws_id,
+        instance_type_cloud_id=instance_type.instance_type_cloud_id,
         cloud_id=instance_type.cloud_id
     )
     try:
