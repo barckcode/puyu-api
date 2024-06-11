@@ -68,4 +68,4 @@ def create_subnet(region: str, availability_zone: str, vpc_id: str, subnet_name:
 
 # Example usage:
 # create_vpc('eu-west-1', 'test-puyu', '10.255.0.0/16')
-# create_subnet('eu-west-1', 'eu-west-1a', 'vpc-08ac8d3776451132b', 'puyu-00', '10.255.0.0/20')
+# create_subnet('eu-west-1', 'eu-west-1a', 'vpc-0d170f2772edce9e9', 'puyu-00', '10.255.0.0/20')
