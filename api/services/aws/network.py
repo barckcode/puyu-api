@@ -1,13 +1,14 @@
 from fastapi import HTTPException
-from clients import AwsClients
+from services.aws.clients import AwsClients
+from schemas.aws.services.network import VpcCreateAwsSchema, VpcCreateDbSchema
 
 
-def create_vpc(region: str, vpc_name: str, vpc_cidr: str):
-    aws_clients = AwsClients(region)
+def create_vpc(vpc: VpcCreateAwsSchema):
+    aws_clients = AwsClients(vpc.region_cloud_id)
     ec2_client = aws_clients.ec2_client()
 
     try:
-        vpc_response = ec2_client.create_vpc(CidrBlock=vpc_cidr)
+        vpc_response = ec2_client.create_vpc(CidrBlock=vpc.cidr_block)
         vpc_id = vpc_response['Vpc']['VpcId']
 
         # Wait for the VPC to be available
@@ -16,7 +17,7 @@ def create_vpc(region: str, vpc_name: str, vpc_cidr: str):
         # Assign a name to the VPC using a tag
         ec2_client.create_tags(
             Resources=[vpc_id],
-            Tags=[{'Key': 'Name', 'Value': vpc_name}]
+            Tags=[{'Key': 'Name', 'Value': vpc.name}]
         )
 
         # Internet Gateway
@@ -25,7 +26,7 @@ def create_vpc(region: str, vpc_name: str, vpc_cidr: str):
 
         ec2_client.create_tags(
             Resources=[igw_id],
-            Tags=[{'Key': 'Name', 'Value': vpc_name}]
+            Tags=[{'Key': 'Name', 'Value': vpc.name}]
         )
         ec2_client.attach_internet_gateway(InternetGatewayId=igw_id, VpcId=vpc_id)
 
@@ -38,9 +39,15 @@ def create_vpc(region: str, vpc_name: str, vpc_cidr: str):
             DestinationCidrBlock='0.0.0.0/0',
             GatewayId=igw_id
         )
-        return f"VPC created with ID: {vpc_id} and name: {vpc_name}"
+
+        return VpcCreateDbSchema(
+            name=vpc.name,
+            aws_resource_id=vpc_id,
+            cidr_block=vpc.cidr_block,
+            region_cloud_id=vpc.region_cloud_id,
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating VPC: {e}")
+        raise HTTPException(status_code=500, detail=f"Error creating VPC on AWS: {e}")
 
 
 def create_subnet(region: str, availability_zone: str, vpc_id: str, subnet_name: str, subnet_cidr: str):
