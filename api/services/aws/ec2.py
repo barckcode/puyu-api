@@ -1,20 +1,24 @@
 import time
 from fastapi import HTTPException
-from clients import AwsClients
+from services.aws.clients import AwsClients
+from schemas.aws.services.ec2 import KeyPairCreateSchema
 
 
-def create_key_pair(region: str, key_name: str):
-    aws_clients = AwsClients(region)
+def create_key_pair(key_pair: KeyPairCreateSchema):
+    aws_clients = AwsClients(key_pair.region_cloud_id)
     ec2_client = aws_clients.ec2_client()
     s3_client = aws_clients.s3_client()
     try:
-        key_pair = ec2_client.create_key_pair(KeyName=key_name, KeyType="ed25519")
+        key_pair = ec2_client.create_key_pair(KeyName=key_pair.name, KeyType="ed25519")
         private_key = key_pair['KeyMaterial']
 
-        s3_client.put_object(Bucket=aws_clients.aws_s3_bucket, Key=f'{key_name}.pem', Body=private_key)
-        return f"Key pair {key_name} created successfully. Private key saved to S3 bucket: {aws_clients.aws_s3_bucket}."
+        s3_client.put_object(Bucket=aws_clients.aws_s3_bucket, Key=f'{key_pair.name}.pem', Body=private_key)
+        return KeyPairCreateSchema(
+            name=key_pair.name,
+            region_cloud_id=key_pair.region_cloud_id
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating key pair: {e}")
+        raise HTTPException(status_code=500, detail=f"Error creating key pair on AWS: {e}")
 
 
 def create_instance(region: str, ami_id:str, name: str, key_name: str, instance_type: str, subnet_id: str, disk_size: int):

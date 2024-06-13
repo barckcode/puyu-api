@@ -4,10 +4,14 @@ from sqlalchemy.orm import Session
 from typing import List
 from db.session import get_db
 #from routes.aws.config import aws_access_key_id, aws_secret_access_key
+from models.core.project import ProjectModel
 from models.aws.services.network import VpcModel, SubnetModel
+from models.aws.services.ec2 import KeyPairModel
 from schemas.aws.services.instance import InstanceCreateSchema
 from schemas.aws.services.network import VpcCreateAwsSchema, SubnetCreateAwsSchema
+from schemas.aws.services.ec2 import KeyPairCreateSchema
 from services.aws.network import create_vpc, create_subnet
+from services.aws.ec2 import create_key_pair
 
 
 aws_instance = APIRouter()
@@ -33,6 +37,10 @@ aws_instance = APIRouter()
     #response_model=InstanceCreateSchema
 )
 def create_instance(instance: InstanceCreateSchema, db: Session = Depends(get_db)):
+    project = db.query(ProjectModel).filter(ProjectModel.project_id == instance.project_id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Project not found")
+
     # Validate Initial Setup
     # VPC
     vpc = db.query(VpcModel).filter(VpcModel.project_id == instance.project_id).first()
@@ -53,7 +61,6 @@ def create_instance(instance: InstanceCreateSchema, db: Session = Depends(get_db
             db.add(new_vpc)
             db.commit()
             db.refresh(new_vpc)
-            vpc_id = new_vpc.id
             aws_vpc_id = new_vpc.aws_resource_id
 
             # Subnet:
@@ -77,8 +84,27 @@ def create_instance(instance: InstanceCreateSchema, db: Session = Depends(get_db
                 db.add(new_subnet)
                 db.commit()
                 db.refresh(new_subnet)
-                return {"subnet_id": new_subnet.id, "aws_subnet_id": new_subnet.aws_resource_id}
-                # TODO: Create Key Pair
+                aws_subnet_id = new_subnet.aws_resource_id # TODO: Need for create Instance
+
+                # Key Pair
+                key_pair_created = create_key_pair(KeyPairCreateSchema(
+                    name=f"{project.name}",
+                    region_cloud_id=instance.region_cloud_id
+                ))
+                new_key_pair = KeyPairModel(
+                    name=key_pair_created.name,
+                    region_cloud_id=key_pair_created.region_cloud_id,
+                    project_id=instance.project_id
+                )
+                try:
+                    db.add(new_key_pair)
+                    db.commit()
+                    db.refresh(new_key_pair)
+                    key_pair_name = new_key_pair.name # TODO: Need for create Instance
+                except Exception as e:
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creating Key Pair on DB: {e}")
+
+                # Security Group
                 # TODO: Create Security Group
                 # TODO: Create Instance
             except Exception as e:
