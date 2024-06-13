@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from services.aws.clients import AwsClients
-from schemas.aws.services.network import VpcCreateAwsSchema, VpcCreateDbSchema
+from schemas.aws.services.network import VpcCreateAwsSchema, VpcCreateDbSchema, SubnetCreateAwsSchema, SubnetCreateDbSchema
 
 
 def create_vpc(vpc: VpcCreateAwsSchema):
@@ -50,15 +50,15 @@ def create_vpc(vpc: VpcCreateAwsSchema):
         raise HTTPException(status_code=500, detail=f"Error creating VPC on AWS: {e}")
 
 
-def create_subnet(region: str, availability_zone: str, vpc_id: str, subnet_name: str, subnet_cidr: str):
-    aws_clients = AwsClients(region)
+def create_subnet(subnet: SubnetCreateAwsSchema):
+    aws_clients = AwsClients(subnet.region_cloud_id)
     ec2_client = aws_clients.ec2_client()
 
     try:
         subnet_response = ec2_client.create_subnet(
-            VpcId=vpc_id,
-            CidrBlock=subnet_cidr,
-            AvailabilityZone=availability_zone
+            VpcId=subnet.aws_vpc_id,
+            CidrBlock=subnet.cidr_block,
+            AvailabilityZone=subnet.availability_zone
         )
         subnet_id = subnet_response['Subnet']['SubnetId']
 
@@ -66,11 +66,18 @@ def create_subnet(region: str, availability_zone: str, vpc_id: str, subnet_name:
 
         ec2_client.create_tags(
             Resources=[subnet_id],
-            Tags=[{'Key': 'Name', 'Value': subnet_name}]
+            Tags=[{'Key': 'Name', 'Value': subnet.name}]
         )
-        return f"Subnet created with ID: {subnet_id} and name: {subnet_name}"
+        return SubnetCreateDbSchema(
+            name=subnet.name,
+            aws_resource_id=subnet_id,
+            cidr_block=subnet.cidr_block,
+            aws_vpc_id=subnet.aws_vpc_id,
+            availability_zone=subnet.availability_zone,
+            region_cloud_id=subnet.region_cloud_id,
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating subnet: {e}")
+        raise HTTPException(status_code=500, detail=f"Error creating subnet on AWS: {e}")
 
 
 # Example usage:

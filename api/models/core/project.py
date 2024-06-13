@@ -10,6 +10,7 @@ class ProjectModel(Base):
 
     project_user = relationship('ProjectUserModel', back_populates='project')
     aws_vpc = relationship('VpcModel', back_populates='project')
+    aws_subnet = relationship('SubnetModel', back_populates='project')
 
     def to_dict(self):
         return {
