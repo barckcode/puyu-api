@@ -9,7 +9,7 @@ from routes.core.instance_type import instance_type
 from routes.core.storage import storage
 from routes.core.region import region
 from routes.aws.core.ami import aws_ami
-from routes.aws.services.instance import aws_instance
+from routes.aws.services.ec2 import aws_instance
 
 
 puyu_frontend = os.getenv('PUYU_FRONTEND_URL')

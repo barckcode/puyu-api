@@ -12,6 +12,9 @@ class ProjectModel(Base):
     aws_vpc = relationship('VpcModel', back_populates='project')
     aws_subnet = relationship('SubnetModel', back_populates='project')
     aws_key_pair = relationship('KeyPairModel', back_populates='project')
+    aws_security_group = relationship('SecurityGroupModel', back_populates='project')
+    aws_security_group_rule = relationship('SecurityGroupRuleModel', back_populates='project')
+    aws_instance = relationship('InstanceModel', back_populates='project')
 
     def to_dict(self):
         return {

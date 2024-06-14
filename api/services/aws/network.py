@@ -78,8 +78,3 @@ def create_subnet(subnet: SubnetCreateAwsSchema):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating subnet on AWS: {e}")
-
-
-# Example usage:
-# create_vpc('eu-west-1', 'test-puyu', '10.255.0.0/16')
-# create_subnet('eu-west-1', 'eu-west-1a', 'vpc-0d170f2772edce9e9', 'puyu-00', '10.255.0.0/20')
