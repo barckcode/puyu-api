@@ -1,6 +1,8 @@
+import urllib3
 from proxmoxer import ProxmoxAPI
 from config.vars import env
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 prox = ProxmoxAPI(
     host=env["PVE_HOST"],
