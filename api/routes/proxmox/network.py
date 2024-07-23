@@ -107,4 +107,4 @@ def remove_network(
 ):
     remove_network_device(proxmox_node, interface_name)
     reload_network_config(proxmox_node)
-    return JSONResponse(content={"message": "Network device removed successfully"}, status_code=status.HTTP_200_OK)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
