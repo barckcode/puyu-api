@@ -64,6 +64,13 @@ def create_network_devices(
             raise ValueError(f"Invalid interface type: {type}")
 
 
+def remove_network_device(proxmox_node: str, iface: str):
+    try:
+        return prox.nodes(proxmox_node).network(iface).delete()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error removing network device: {e}")
+
+
 def reload_network_config(proxmox_node: str):
     try:
         return prox.nodes(proxmox_node).network.put()
