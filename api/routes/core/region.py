@@ -57,6 +57,10 @@ def create_region(region: RegionCreateSchema, db: Session = Depends(get_db)):
     except IntegrityError:
         logger.warning(f"Region already exists")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Region already exists")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error creating region: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating region")
     return JSONResponse(content=region.to_dict(), status_code=status.HTTP_201_CREATED)
 
 

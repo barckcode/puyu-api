@@ -52,6 +52,10 @@ def create_ssh_key(ssh_key: SshKeyCreateSchema, db: Session = Depends(get_db)):
     except IntegrityError:
         logger.warning(f"Ssh key already exists")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ssh key already exists")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error creating ssh key: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating ssh key")
     return JSONResponse(content=ssh_key.to_dict(), status_code=status.HTTP_201_CREATED)
 
 

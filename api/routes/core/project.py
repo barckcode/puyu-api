@@ -83,8 +83,12 @@ def create_project(
         # db.commit()
         return JSONResponse(content=new_project.to_dict(), status_code=status.HTTP_201_CREATED)
     except IntegrityError:
-        logger.error(f"Project ID does not exist in project table")
+        logger.warning(f"Project ID does not exist in project table")
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Project ID does not exist in project table")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error creating project: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating project")
 
 
 @project_router.put(

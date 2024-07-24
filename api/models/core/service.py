@@ -18,4 +18,5 @@ class ServiceModel(Base):
             "name": self.name,
             "description": self.description,
             "available": self.available,
+            "regions": [rs.region_id for rs in self.regions]
         }
