@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
-from db.config import Base, engine
+from db.config import Base
 
 
 class RegionModel(Base):
@@ -10,6 +10,8 @@ class RegionModel(Base):
     logo = Column(String, nullable=False)
     available = Column(Boolean, nullable=False)
 
+    services = relationship('RegionServiceModel', back_populates='region')
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -17,5 +19,3 @@ class RegionModel(Base):
             "logo": self.logo,
             "available": self.available,
         }
-
-Base.metadata.create_all(engine)

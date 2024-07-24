@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from db.config import Base, engine
+from db.config import Base
 
 
 class UserProjectModel(Base):
@@ -17,5 +17,3 @@ class UserProjectModel(Base):
             "sub": self.sub,
             "project_id": self.project_id,
         }
-
-Base.metadata.create_all(engine)

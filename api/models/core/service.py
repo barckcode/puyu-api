@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
-from db.config import Base, engine
+from db.config import Base
 
 
 class ServiceModel(Base):
@@ -10,6 +10,8 @@ class ServiceModel(Base):
     description = Column(String, nullable=False)
     available = Column(Boolean, nullable=False, default=True)
 
+    regions = relationship('RegionServiceModel', back_populates='service')
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -17,5 +19,3 @@ class ServiceModel(Base):
             "description": self.description,
             "available": self.available,
         }
-
-Base.metadata.create_all(engine)

@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
 from utils.logs import logger
-from models.core.region import RegionModel
+from models import RegionModel
 from schemas.core.region import RegionFilterParams, RegionSchema, RegionCreateSchema, RegionUpdateSchema
 
 

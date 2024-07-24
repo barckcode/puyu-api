@@ -6,7 +6,7 @@ from typing import List
 from db.session import get_db
 from utils.logs import logger
 #from auth.jwt import verify_token
-from models.core.project import ProjectModel
+from models import ProjectModel
 #from models.auth.user_project import UserProjectModel
 from schemas.core.project import ProjectSchema, ProjectCreateSchema, ProjectUpdateSchema
 

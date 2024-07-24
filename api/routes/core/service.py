@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
 from utils.logs import logger
-from models.core.service import ServiceModel
+from models import ServiceModel
 from schemas.core.service import ServiceFilterParams, ServiceSchema, ServiceCreateSchema, ServiceUpdateSchema
 
 

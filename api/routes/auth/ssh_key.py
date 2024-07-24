@@ -5,8 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List
 from db.session import get_db
 from utils.logs import logger
-from models.auth.ssh_key import SshKeyModel
-from models.core.project import ProjectModel
+from models import SshKeyModel, ProjectModel
 from schemas.auth.ssh_key import SshKeySchema, SshKeyCreateSchema, SshKeyUpdateSchema
 
 
