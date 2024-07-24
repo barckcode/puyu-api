@@ -5,6 +5,7 @@ from routes.proxmox.network import network_devices
 from routes.proxmox.lxc import lxc_containers
 from routes.core.project import project_router
 from routes.core.region import region_router
+from routes.core.service import service_router
 from routes.auth.ssh_key import ssh_key_router
 
 
@@ -37,6 +38,10 @@ app = FastAPI(
                     "description": "Handle Regions",
                 },
                 {
+                    "name": "service",
+                    "description": "Handle Services",
+                },
+                {
                     "name": "ssh_key",
                     "description": "Handle SSH Keys",
                 }
@@ -50,4 +55,5 @@ app.include_router(network_devices)
 app.include_router(lxc_containers)
 app.include_router(project_router)
 app.include_router(region_router)
+app.include_router(service_router)
 app.include_router(ssh_key_router)

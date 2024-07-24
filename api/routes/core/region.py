@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -36,7 +36,7 @@ def get_all_regions(
     regions = query.all()
     if not regions:
         logger.warning(f"No regions found with the given filters")
-        return JSONResponse(content=[], status_code=status.HTTP_200_OK)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     regions_list = [region.to_dict() for region in regions]
     return JSONResponse(content=regions_list, status_code=status.HTTP_200_OK)
 
