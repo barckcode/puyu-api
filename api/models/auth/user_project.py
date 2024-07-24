@@ -9,7 +9,7 @@ class UserProjectModel(Base):
     sub = Column(String, nullable=False)
     project_id = Column(Integer, ForeignKey('projects.id'), nullable=False)
 
-    project = relationship('ProjectsModel', back_populates='project_user')
+    project = relationship('ProjectModel', back_populates='project_user')
 
     def to_dict(self):
         return {
