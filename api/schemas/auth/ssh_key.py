@@ -1,20 +1,20 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SshKeySchema(BaseModel):
     id: int | None = None
-    name: str
-    public_key: str
-    project_id: int
+    name: str = Field(..., description="The name of the ssh key")
+    public_key: str = Field(..., description="The public key of the ssh key")
+    project_id: int = Field(..., description="The id of the project")
 
 
 class SshKeyCreateSchema(BaseModel):
-    name: str
-    public_key: str
-    project_id: int
+    name: str = Field(..., description="The name of the ssh key")
+    public_key: str = Field(..., description="The public key of the ssh key")
+    project_id: int = Field(..., description="The id of the project")
 
 
 class SshKeyUpdateSchema(BaseModel):
-    name: str | None = None
-    public_key: str | None = None
-    project_id: int | None = None
+    name: str | None = Field(default=None, description="The name of the ssh key")
+    public_key: str | None = Field(default=None, description="The public key of the ssh key")
+    project_id: int | None = Field(default=None, description="The id of the project")
