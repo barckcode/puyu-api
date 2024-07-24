@@ -3,18 +3,20 @@ from sqlalchemy.orm import relationship
 from db.config import Base, engine
 
 
-class UserProjectModel(Base):
-    __tablename__ = 'user_project'
+class SshKeyModel(Base):
+    __tablename__ = 'ssh_keys'
     id = Column(Integer, primary_key=True)
-    sub = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    public_key = Column(String, nullable=False)
     project_id = Column(Integer, ForeignKey('projects.id'), nullable=False)
 
-    project = relationship('ProjectModel', back_populates='user_project')
+    project = relationship('ProjectModel', back_populates='ssh_key')
 
     def to_dict(self):
         return {
             "id": self.id,
-            "sub": self.sub,
+            "name": self.name,
+            "public_key": self.public_key,
             "project_id": self.project_id,
         }
 

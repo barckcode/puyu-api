@@ -8,7 +8,8 @@ class ProjectModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
-    # project_user = relationship('UserProjectModel', back_populates='project')
+    #user_project = relationship('UserProjectModel', back_populates='project')
+    ssh_key = relationship('SshKeyModel', back_populates='project')
 
     def to_dict(self):
         return {
