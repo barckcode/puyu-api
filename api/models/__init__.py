@@ -11,5 +11,8 @@ from .core.region import RegionModel
 from .core.service import ServiceModel
 from .core.region_service import RegionServiceModel
 
+# Business Models
+from .business.server_offer import ServerOfferModel
+
 
 Base.metadata.create_all(engine)
