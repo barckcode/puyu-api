@@ -8,6 +8,7 @@ from routes.core.region import region_router
 from routes.core.service import service_router
 from routes.auth.ssh_key import ssh_key_router
 from routes.business.server_offer import server_offer_router
+from routes.servers.image import server_image_router
 
 
 logging.basicConfig(level=logging.INFO)
@@ -57,6 +58,16 @@ app = FastAPI(
                     "description": "Handle Server Offers",
                 }
             ]
+        },
+        {
+            "name": "servers",
+            "description": "Servers API",
+            "children": [
+                {
+                    "name": "image",
+                    "description": "Handle Server Images",
+                }
+            ]
         }
     ],
 )
@@ -69,3 +80,4 @@ app.include_router(region_router)
 app.include_router(service_router)
 app.include_router(ssh_key_router)
 app.include_router(server_offer_router)
+app.include_router(server_image_router)

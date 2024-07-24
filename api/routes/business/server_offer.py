@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from typing import List
 from db.session import get_db
 from utils.logs import logger
 from models import ServerOfferModel, ServiceModel

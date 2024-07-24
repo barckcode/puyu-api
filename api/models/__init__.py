@@ -14,5 +14,8 @@ from .core.region_service import RegionServiceModel
 # Business Models
 from .business.server_offer import ServerOfferModel
 
+# Server Models
+from .servers.image import ServerImageModel
+
 
 Base.metadata.create_all(engine)

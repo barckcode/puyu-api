@@ -12,6 +12,7 @@ class ServiceModel(Base):
 
     regions = relationship('RegionServiceModel', back_populates='service')
     server_offers = relationship('ServerOfferModel', back_populates='service')
+    server_images = relationship('ServerImageModel', back_populates='service')
 
     def to_dict(self):
         return {
