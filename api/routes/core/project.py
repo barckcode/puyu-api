@@ -11,12 +11,11 @@ from models.core.project import ProjectModel
 from schemas.core.project import ProjectSchema, ProjectCreateSchema, ProjectUpdateSchema
 
 
-
 project_router = APIRouter()
 
 
 @project_router.get(
-    "/project",
+    "/core/project",
     tags=["core", "project"],
     summary="Get Projects",
     description="Get All Projects",
@@ -25,12 +24,15 @@ project_router = APIRouter()
 def get_all_projects(db: Session = Depends(get_db)):
     logger.info("Getting all projects")
     project_query = db.query(ProjectModel).all()
+    if not project_query:
+        logger.warning(f"Projects not found")
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Projects not found")
     project_list = [project.to_dict() for project in project_query]
     return JSONResponse(project_list)
 
 
 @project_router.get(
-    "/project/{id}",
+    "/core/project/{id}",
     tags=["core", "project"],
     summary="Get Project",
     description="Get Project by ID",
@@ -44,13 +46,13 @@ def get_project_by_id(
     logger.info(f"Getting project with id {id}")
     project = db.query(ProjectModel).filter(ProjectModel.id == id).first()
     if project is None:
-        logger.error(f"Project with id {id} not found")
+        logger.warning(f"Project with id {id} not found")
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Project not found")
     return project
 
 
 @project_router.post(
-    "/project",
+    "/core/project",
     tags=["core", "project"],
     summary="Create Project",
     description="Create One Project",
@@ -63,7 +65,7 @@ def create_project(
 ):
     logger.info(f"Creating project with name {project.name}")
     if not project.name:
-        logger.error(f"Project name {project.name} is not valid")
+        logger.warning(f"Project name {project.name} is not valid")
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Incorrect Project Data or Project Name already exists")
     new_project = ProjectModel(
         name=project.name,
@@ -86,7 +88,7 @@ def create_project(
 
 
 @project_router.put(
-    "/project/{id}",
+    "/core/project/{id}",
     tags=["core", "project"],
     summary="Update Project",
     description="Update Project by id",
@@ -100,7 +102,7 @@ def update_project_by_id(
     logger.info(f"Updating project with id {id}")
     project = db.query(ProjectModel).filter(ProjectModel.id == id).first()
     if project is None:
-        logger.error(f"Project with id {id} not found")
+        logger.warning(f"Project with id {id} not found")
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Project not found")
     for key, value in project_update.model_dump(exclude_unset=True).items():
         setattr(project, key, value)
@@ -111,7 +113,7 @@ def update_project_by_id(
 
 
 @project_router.delete(
-    "/project/{id}",
+    "/core/project/{id}",
     tags=["core", "project"],
     summary="Delete Project",
     description="Delete Project by ID",
@@ -124,7 +126,7 @@ def delete_project_by_id(
     logger.info(f"Deleting project with id {id}")
     project = db.query(ProjectModel).filter(ProjectModel.id == id).first()
     if project is None:
-        logger.error(f"Project with id {id} not found")
+        logger.warning(f"Project with id {id} not found")
         raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Project not found")
     db.delete(project)
     db.commit()

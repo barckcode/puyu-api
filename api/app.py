@@ -4,6 +4,7 @@ from routes.proxmox.nodes import pve_nodes
 from routes.proxmox.network import network_devices
 from routes.proxmox.lxc import lxc_containers
 from routes.core.project import project_router
+from routes.core.region import region_router
 from routes.auth.ssh_key import ssh_key_router
 
 
@@ -16,6 +17,10 @@ app = FastAPI(
     version="0.0.1",
     openapi_tags=[
         {
+            "name": "auth",
+            "description": "Authentication API",
+        },
+        {
             "name": "proxmox",
             "description": "Proxmox API",
         },
@@ -26,9 +31,17 @@ app = FastAPI(
                 {
                     "name": "project",
                     "description": "Handle Projects",
+                },
+                {
+                    "name": "region",
+                    "description": "Handle Regions",
+                },
+                {
+                    "name": "ssh_key",
+                    "description": "Handle SSH Keys",
                 }
             ]
-        }
+        },
     ],
 )
 
@@ -36,4 +49,5 @@ app.include_router(pve_nodes)
 app.include_router(network_devices)
 app.include_router(lxc_containers)
 app.include_router(project_router)
+app.include_router(region_router)
 app.include_router(ssh_key_router)
