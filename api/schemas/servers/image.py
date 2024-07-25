@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field
+from typing import List
+
 
 
 class ServerImageSchema(BaseModel):
@@ -9,6 +11,7 @@ class ServerImageSchema(BaseModel):
     logo: str = Field(..., description="The logo of the server image")
     available: bool = Field(..., description="Whether the server image is available")
     service_id: int = Field(..., description="The ID of the service")
+    regions: List[int] = Field(default=[], description="List of region IDs where this image is available")
 
 
 class ServerImageCreateSchema(BaseModel):
@@ -18,6 +21,7 @@ class ServerImageCreateSchema(BaseModel):
     logo: str = Field(..., description="The logo of the server image")
     available: bool = Field(..., description="Whether the server image is available")
     service_id: int = Field(..., description="The ID of the service")
+    regions: List[int] = Field(default=[], description="List of region IDs where this image is available")
 
 
 class ServerImageUpdateSchema(BaseModel):

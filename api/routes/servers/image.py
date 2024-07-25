@@ -1,10 +1,10 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi import APIRouter, HTTPException, status, Depends, Path, Body
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
 from typing import List
 from db.session import get_db
 from utils.logs import logger
-from models import ServerImageModel, ServiceModel
+from models import ServerImageModel, ServiceModel, RegionModel, RegionImageModel
 from schemas.servers.image import ServerImageSchema, ServerImageCreateSchema, ServerImageUpdateSchema
 
 
@@ -15,7 +15,7 @@ server_image_router = APIRouter()
     "/server/image",
     tags=["servers", "images"],
     summary="Get all server images",
-    response_model=ServerImageSchema,
+    response_model=List[ServerImageSchema],
 )
 def get_server_images(
     db: Session = Depends(get_db)
@@ -70,13 +70,88 @@ def create_server_image(
     new_server_image = ServerImageModel(**server_image.dict())
     try:
         db.add(new_server_image)
+        db.flush()
+        for region_id in server_image.regions:
+            region = db.query(RegionModel).filter(RegionModel.id == region_id).first()
+            if not region:
+                logger.warning(f"No region found for ID: {region_id}")
+                return Response(status_code=status.HTTP_204_NO_CONTENT)
+            region_image = RegionImageModel(region_id=region_id, image_id=new_server_image.id)
+            db.add(region_image)
         db.commit()
         db.refresh(new_server_image)
     except Exception as e:
         db.rollback()
         logger.error(f"Error creating server image: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error creating server image")
-    return JSONResponse(new_server_image.to_dict(), status_code=status.HTTP_201_CREATED)
+    new_server_image_dict = new_server_image.to_dict()
+    new_server_image_dict['regions'] = server_image.regions
+    return JSONResponse(new_server_image_dict, status_code=status.HTTP_201_CREATED)
+
+
+@server_image_router.post(
+    "/server/image/{server_image_id}/regions",
+    tags=["servers", "images"],
+    summary="Add regions to an existing server image",
+    response_model=ServerImageSchema,
+)
+def add_regions_to_server_image(
+    server_image_id: int = Path(..., description="The ID of the server image to add regions to"),
+    region_ids: List[int] = Body(..., description="The IDs of the regions to add to the server image"),
+    db: Session = Depends(get_db)
+):
+    logger.info(f"Adding regions to server image {server_image_id}")
+    server_image = db.query(ServerImageModel).filter(ServerImageModel.id == server_image_id).first()
+    if not server_image:
+        logger.warning(f"Server image with id {server_image_id} not found")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    existing_regions = set(rs.region_id for rs in server_image.regions)
+    try:
+        for region_id in region_ids:
+            if region_id not in existing_regions:
+                region = db.query(RegionModel).filter(RegionModel.id == region_id).first()
+                if not region:
+                    logger.warning(f"Region with id {region_id} not found")
+                    return Response(status_code=status.HTTP_204_NO_CONTENT)
+                region_image = RegionImageModel(region_id=region_id, image_id=server_image_id)
+                db.add(region_image)
+        db.commit()
+        db.refresh(server_image)
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error adding regions to server image: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error adding regions to server image")
+    return JSONResponse(content=server_image.to_dict(), status_code=status.HTTP_200_OK)
+
+
+@server_image_router.delete(
+    "/server/image/{server_image_id}/regions",
+    tags=["servers", "images"],
+    summary="Remove regions from an existing server image",
+    response_model=ServerImageSchema,
+)
+def remove_regions_from_server_image(
+    server_image_id: int = Path(..., description="The ID of the server image to remove regions from"),
+    region_ids: List[int] = Body(..., description="The IDs of the regions to remove from the server image"),
+    db: Session = Depends(get_db)
+):
+    logger.info(f"Removing regions from server image {server_image_id}")
+    server_image = db.query(ServerImageModel).filter(ServerImageModel.id == server_image_id).first()
+    if not server_image:
+        logger.warning(f"Server image with id {server_image_id} not found")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    try:
+        db.query(RegionImageModel).filter(
+            RegionImageModel.image_id == server_image_id,
+            RegionImageModel.region_id.in_(region_ids)
+        ).delete(synchronize_session=False)
+        db.commit()
+        db.refresh(server_image)
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error removing regions from server image: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error removing regions from server image")
+    return JSONResponse(content=server_image.to_dict(), status_code=status.HTTP_200_OK)
 
 
 @server_image_router.put(

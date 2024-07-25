@@ -14,6 +14,7 @@ class ServerImageModel(Base):
     service_id = Column(Integer, ForeignKey('services.id'), nullable=False)
 
     service = relationship('ServiceModel', back_populates='server_images')
+    regions = relationship('RegionImageModel', back_populates='server_images')
 
     def to_dict(self):
         return {
@@ -24,4 +25,5 @@ class ServerImageModel(Base):
             "logo": self.logo,
             "available": self.available,
             "service_id": self.service_id,
+            "regions": [rs.region_id for rs in self.regions]
         }

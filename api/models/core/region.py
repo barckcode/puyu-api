@@ -11,6 +11,7 @@ class RegionModel(Base):
     available = Column(Boolean, nullable=False)
 
     services = relationship('RegionServiceModel', back_populates='region')
+    server_images = relationship('RegionImageModel', back_populates='region')
 
     def to_dict(self):
         return {

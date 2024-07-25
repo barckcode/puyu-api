@@ -20,7 +20,7 @@ class ServiceCreateSchema(BaseModel):
     name: str = Field(..., description="The name of the service")
     description: str = Field(..., description="The description of the service")
     available: bool = Field(..., description="The availability of the service")
-    region_ids: List[int] = Field([], description="List of region IDs where the service is available")
+    regions: List[int] = Field([], description="List of region IDs where the service is available")
 
 
 class ServiceUpdateSchema(BaseModel):

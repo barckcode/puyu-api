@@ -75,7 +75,7 @@ def create_service(service: ServiceCreateSchema, db: Session = Depends(get_db)):
         logger.error(f"Error creating service: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating service")
     response_data = new_service.to_dict()
-    response_data["regions"] = service.region_ids
+    response_data["regions"] = service.regions
     return JSONResponse(content=response_data, status_code=status.HTTP_201_CREATED)
 
 
