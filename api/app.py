@@ -10,6 +10,7 @@ from routes.auth.ssh_key import ssh_key_router
 from routes.business.server_offer import server_offer_router
 from routes.servers.image import server_image_router
 from routes.servers.node import prox_node_router
+from routes.networking.vlan import prox_vlan_router
 
 
 logging.basicConfig(level=logging.INFO)
@@ -73,6 +74,16 @@ app = FastAPI(
                     "description": "Handle Proxmox Nodes",
                 }
             ]
+        },
+        {
+            "name": "networking",
+            "description": "Networking API",
+            "children": [
+                {
+                    "name": "vlans",
+                    "description": "Handle VLANs",
+                }
+            ]
         }
     ],
 )
@@ -87,3 +98,4 @@ app.include_router(ssh_key_router)
 app.include_router(server_offer_router)
 app.include_router(server_image_router)
 app.include_router(prox_node_router)
+app.include_router(prox_vlan_router)

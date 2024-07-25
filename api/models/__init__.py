@@ -19,5 +19,7 @@ from .servers.image import ServerImageModel
 from .servers.region_image import RegionImageModel
 from .servers.node import ProxNodeModel
 
+# Networking Models
+from .networking.vlan import ProxVlanModel
 
 Base.metadata.create_all(engine)

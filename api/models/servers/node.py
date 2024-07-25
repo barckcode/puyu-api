@@ -12,6 +12,7 @@ class ProxNodeModel(Base):
     region_id = Column(Integer, ForeignKey('regions.id'), nullable=False)
 
     region = relationship('RegionModel', back_populates='prox_nodes')
+    prox_vlans = relationship('ProxVlanModel', back_populates='prox_node')
 
     def to_dict(self):
         return {
