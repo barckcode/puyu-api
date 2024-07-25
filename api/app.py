@@ -9,6 +9,7 @@ from routes.core.service import service_router
 from routes.auth.ssh_key import ssh_key_router
 from routes.business.server_offer import server_offer_router
 from routes.servers.image import server_image_router
+from routes.servers.node import prox_node_router
 
 
 logging.basicConfig(level=logging.INFO)
@@ -64,8 +65,12 @@ app = FastAPI(
             "description": "Servers API",
             "children": [
                 {
-                    "name": "image",
+                    "name": "images",
                     "description": "Handle Server Images",
+                },
+                {
+                    "name": "nodes",
+                    "description": "Handle Proxmox Nodes",
                 }
             ]
         }
@@ -81,3 +86,4 @@ app.include_router(service_router)
 app.include_router(ssh_key_router)
 app.include_router(server_offer_router)
 app.include_router(server_image_router)
+app.include_router(prox_node_router)

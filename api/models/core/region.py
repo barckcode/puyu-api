@@ -12,6 +12,7 @@ class RegionModel(Base):
 
     services = relationship('RegionServiceModel', back_populates='region')
     server_images = relationship('RegionImageModel', back_populates='region')
+    prox_nodes = relationship('ProxNodeModel', back_populates='region')
 
     def to_dict(self):
         return {

@@ -17,6 +17,7 @@ from .business.server_offer import ServerOfferModel
 # Server Models
 from .servers.image import ServerImageModel
 from .servers.region_image import RegionImageModel
+from .servers.node import ProxNodeModel
 
 
 Base.metadata.create_all(engine)
